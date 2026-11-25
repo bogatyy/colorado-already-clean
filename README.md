@@ -12,30 +12,35 @@ Pictures: **[Colorado Neuron Maps](https://bogatyy.github.io/colorado-already-cl
 
 "The Colorado neuron" of a model is the MLP neuron that best separates Colorado articles from other US and general articles (the selection rule is under Method). Share is the neuron's mean firing on a country's articles divided by its mean firing on Colorado articles, so 1.00 means "as hard as on Colorado itself".
 
-| Model | Its Colorado neuron | Bolivia among 179 countries | Bolivia's share (95% range) | 1st in | Top country | Bolivia among 216 places abroad | Bolivia 1st on | Bolivia on the mean of the best 8 |
-|---|---|---|---|---|---|---|---|---|
-| Qwen3-32B | `L55/N11703P` | **1st** | 0.72 (0.53 to 0.94) | 88% | Bolivia 0.72 | 1st | 6 of 16 | 1st |
-| Gemma 3 27B | `L35/N1107P` | **1st** | 0.69 (0.51 to 0.94) | 100% | Bolivia 0.69 | 1st | 9 of 16 | 1st |
-| Llama 3.3 70B | `L42/N28598M` | **1st** | 0.46 (0.30 to 0.69) | 100% | Bolivia 0.46 | 1st | 7 of 16 | 1st |
-| Mistral Small 3.2 | `L27/N14184M` | **1st** | 0.35 (0.25 to 0.47) | 100% | Bolivia 0.35 | 1st | 3 of 16 | 2nd |
-| Gemma 4 31B | `L42/N8677M` | **1st** | 0.11 (0.07 to 0.15) | 86% | Bolivia 0.11 | 3rd (Sichuan 0.29) | 3 of 16 | 1st |
-| OLMo-2 7B | `L22/N6538P` | **1st** | 0.10 (0.06 to 0.15) | 75% | Bolivia 0.10 | 1st | 2 of 14 | 1st |
-| OLMo-2 13B | `L29/N1368P` | 2nd | 0.93 (0.64 to 1.31) | 6% | Nepal 1.16 | 2nd (Nepal 1.16) | 3 of 16 | 2nd |
-| Granite 4.2 30B | `L44/N12921P` | 2nd | 0.05 (0.03 to 0.08) | 9% | Colombia 0.08 | 7th (Sichuan 0.27) | 3 of 16 | 1st |
-| Muse Glimmer 30B | `L14/N10142P` | 4th | 0.03 (0.02 to 0.06) | 0% | Nepal 0.17 | 11th (Sichuan 0.83) | 0 of 16 | 7th |
-| Marin 32B | `L44/N22385M` | 4th | 0.02 (0.01 to 0.04) | 0% | Austria 0.10 | 9th (Alberta 0.41) | 1 of 16 | 5th |
-| Phi-4 | `L26/N17652M` | 7th | 0.23 (0.16 to 0.32) | 0% | Pakistan 1.73 | 13th (Pakistan 1.73) | 2 of 16 | 2nd |
-| Qwen3.6-27B | `L55/N16769M` | 12th | 0.01 (0.00 to 0.01) | 0% | Ecuador 0.11 | 17th (Ecuador 0.11) | 0 of 16 | 19th |
-| Marin 8B | `L24/N10683M` | 51st | 0.00 (0.00 to 0.00) | 0% | Nepal 0.01 | 75th (Alberta 0.03) | 1 of 16 | 6th |
+| Model | Its Colorado neuron | Bolivia among 179 countries | Bolivia's share (95% range) | 1st in | Top country | Bolivia among 216 places abroad | Bolivia among 1,035 topics | Bolivia 1st on | Bolivia on the mean of the best 8 |
+|---|---|---|---|---|---|---|---|---|---|
+| Qwen3-32B | `L55/N11703P` | **1st** | 0.72 (0.53 to 0.94) | 88% | Bolivia 0.72 | 1st | 3rd | 6 of 16 | 1st |
+| Gemma 3 27B | `L35/N1107P` | **1st** | 0.69 (0.51 to 0.94) | 100% | Bolivia 0.69 | 1st | 2nd | 9 of 16 | 1st |
+| Llama 3.3 70B | `L42/N28598M` | **1st** | 0.46 (0.30 to 0.69) | 100% | Bolivia 0.46 | 1st | 3rd | 7 of 16 | 1st |
+| Mistral Small 3.2 | `L27/N14184M` | **1st** | 0.35 (0.25 to 0.47) | 100% | Bolivia 0.35 | 1st | 3rd | 3 of 16 | 2nd |
+| Gemma 4 31B | `L42/N8677M` | **1st** | 0.11 (0.07 to 0.15) | 86% | Bolivia 0.11 | 3rd (Sichuan 0.29) | 5th | 3 of 16 | 1st |
+| OLMo-2 7B | `L22/N6538P` | **1st** | 0.10 (0.06 to 0.15) | 75% | Bolivia 0.10 | 1st | 12th | 2 of 14 | 1st |
+| OLMo-2 13B | `L29/N1368P` | 2nd | 0.93 (0.64 to 1.31) | 6% | Nepal 1.16 | 2nd (Nepal 1.16) | 3rd | 3 of 16 | 2nd |
+| Granite 4.2 30B | `L44/N12921P` | 2nd | 0.05 (0.03 to 0.08) | 9% | Colombia 0.08 | 7th (Sichuan 0.27) | 31st | 3 of 16 | 1st |
+| Muse Glimmer 30B | `L14/N10142P` | 4th | 0.03 (0.02 to 0.06) | 0% | Nepal 0.17 | 11th (Sichuan 0.83) | 84th | 0 of 16 | 7th |
+| Marin 32B | `L44/N22385M` | 4th | 0.02 (0.01 to 0.04) | 0% | Austria 0.10 | 9th (Alberta 0.41) | 50th | 1 of 16 | 5th |
+| Phi-4 | `L26/N17652M` | 7th | 0.23 (0.16 to 0.32) | 0% | Pakistan 1.73 | 13th (Pakistan 1.73) | 29th | 2 of 16 | 2nd |
+| Qwen3.6-27B | `L55/N16769M` | 12th | 0.01 (0.00 to 0.01) | 0% | Ecuador 0.11 | 17th (Ecuador 0.11) | 58th | 0 of 16 | 19th |
+| Marin 8B | `L24/N10683M` | 51st | 0.00 (0.00 to 0.00) | 0% | Nepal 0.01 | 75th (Alberta 0.03) | 279th | 1 of 16 | 6th |
 
 How to read the columns:
 
 - **Share (95% range)** and **1st in**: the articles are redrawn 2,000 times; the range covers 95% of the redraws, and "1st in" is how often Bolivia stays the top country.
 - **Among 216 places abroad** adds 37 regions (Tibet, Sichuan, Alberta, Tyrol and so on) to the 179 countries. Where a region beats Bolivia it is named.
+- **Among 1,035 topics** widens the comparison beyond places abroad. The topics are the 264 places other than Colorado (the 179 countries, 48 other US states and 37 regions), each averaged over its articles, plus the 771 randomly drawn articles that name no listed place, each counted as a topic of its own. The comparison is uneven (an average of about 24 articles against single articles), and 771 articles are a small slice of Wikipedia.
 - **Bolivia 1st on** counts, among the model's best Colorado neurons (up to 16), those where Bolivia is the top country with a share of at least 0.1.
 - **On the mean of the best 8** is Bolivia's rank among countries when the shares of the model's eight best Colorado neurons are averaged. It shows how far the result depends on the single top neuron.
 
 Across the 13 models, Bolivia is the top country on the Colorado neuron in 6 (Qwen3-32B, Gemma 3 27B, Llama 3.3 70B, Mistral Small 3.2, Gemma 4 31B, OLMo-2 7B). Over all 206 saved Colorado neurons, Bolivia is first on 40 (in 11 models), Nepal is first on 17 (in 8 models), Colombia is first on 11 (in 7 models); no other country is first on more than 5.
+
+Against all 1,035 topics, Bolivia is in the top five on the Colorado neuron of 6 models. Ranked above it there (names in quotes are single articles): in Gemma 3 27B (2nd), "Los Andes Province (Bolivia)"; in Qwen3-32B (3rd), "Los Andes Province (Bolivia)" and "Blackmon"; in Llama 3.3 70B (3rd), "Los Andes Province (Bolivia)" and "Dharmacon"; in Mistral Small 3.2 (3rd), "Blackmon" and "Los Andes Province (Bolivia)"; in OLMo-2 13B (3rd), "Los Andes Province (Bolivia)" and Nepal; in Gemma 4 31B (5th), "Naghar", Sichuan, Yunnan and "Los Andes Province (Bolivia)".
+
+The article ahead of Bolivia in each of those models is itself about Bolivia: "Los Andes Province (Bolivia)" is one of the randomly drawn articles, and its opening says "Bolivian", which the place rule does not count as naming Bolivia. "Blackmon" is a list of people with that surname and opens with Charlie Blackmon, who spent his whole major-league career with the Colorado Rockies; "Dharmacon" is a company headquartered in Lafayette, Colorado. Neither text contains the word Colorado. "Naghar" is a village in the Indian state of Uttarakhand.
 
 Six more models were tried and have no neuron that passes the selection rule, so nothing can be read from them: Pythia 410M, 1.4B, 2.8B, 6.9B and 12B, and Gensyn open-1b.
 
