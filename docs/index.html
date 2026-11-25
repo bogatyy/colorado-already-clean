@@ -61,6 +61,7 @@ button { font: inherit; color: inherit; }
 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
 
 .intro { display: flex; flex-direction: column; gap: 10px; }
+.intro-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .lede { max-width: 70ch; color: var(--ink-2); font-size: 1.02rem; }
 .key { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 5px 18px; font-size: 0.82rem; color: var(--ink-2); }
 .key li { display: inline-flex; align-items: center; gap: 6px; }
@@ -107,9 +108,14 @@ button { font: inherit; color: inherit; }
 .zoom-bar h2 { min-width: 0; }
 .nav { display: flex; align-items: center; gap: 6px; flex: none; }
 .nav .pos { color: var(--ink-3); font-size: 0.82rem; margin-right: 4px; white-space: nowrap; }
-.nav button { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; width: 38px; height: 38px; cursor: pointer;
+.nav button, .iconbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; width: 38px; height: 38px; cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center; }
-.nav button:hover { border-color: var(--ink-3); }
+.nav button:hover, .iconbtn:hover { border-color: var(--ink-3); }
+.iconbtn { flex: none; }
+/* the switch shows where a click leads: a moon while the page is light, a sun while it is dark */
+.theme-btn .sun { display: none; }
+.theme-btn[data-mode="dark"] .sun { display: block; }
+.theme-btn[data-mode="dark"] .moon { display: none; }
 .sub { color: var(--ink-2); font-size: 0.92rem; max-width: 80ch; }
 .stage { display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-areas: "map side" "cap side" "table table"; grid-template-rows: auto 1fr auto; gap: 12px 32px; align-items: start; }
 .mapwrap { grid-area: map; position: relative; min-width: 0; }
@@ -168,15 +174,39 @@ td.zero { color: var(--ink-3); }
 @media (max-width: 980px) { .stage { grid-template-columns: minmax(0, 1fr); grid-template-areas: "map" "side" "cap" "table"; grid-template-rows: none; } }
 @media (max-width: 600px) {
   .cards { grid-template-columns: minmax(0, 1fr); }
-  .nav .pos { display: none; }
+  .nav .pos, .nav .theme-btn { display: none; }
   .zoom-bar h2 { font-size: 1.08rem; }
 }
 </style>
 
+<script>
+/* Light or dark. The page follows the device until the reader picks one with the switch; the pick is kept in this browser. */
+(function () {
+  var root = document.documentElement, KEY = "colorado-maps:theme", mq = window.matchMedia("(prefers-color-scheme: dark)");
+  try { var saved = localStorage.getItem(KEY); if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved); } catch (e) {}
+  function isDark() { var t = root.getAttribute("data-theme"); return t === "dark" || (t !== "light" && mq.matches); }
+  function sync() {
+    var dark = isDark(), label = dark ? "Switch to light" : "Switch to dark";
+    document.querySelectorAll(".theme-btn").forEach(function (b) { b.setAttribute("data-mode", dark ? "dark" : "light"); b.setAttribute("aria-label", label); b.title = label; });
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest(".theme-btn") : null; if (!b) return;
+    var next = isDark() ? "light" : "dark"; root.setAttribute("data-theme", next);
+    try { localStorage.setItem(KEY, next); } catch (err) {}
+  });
+  new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  if (mq.addEventListener) mq.addEventListener("change", sync);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", sync); else sync();
+})();
+</script>
+
 <div class="page" id="page">
   <header class="intro">
-    <h1>Colorado Neuron Maps</h1>
-    <p class="lede">Goodfire's essay <a href="https://already-clean.goodfire.com/">Neural Networks Are Already Clean</a> maps a neuron in Qwen3-32B that fires on Colorado, and one branch of that map is “Bolivia and the Andes”. This page draws the same kind of map for the four best Colorado neurons in each of six models, from 7,239 randomly drawn Wikipedia articles. A dot is one article: the nearer the centre, the harder the neuron fires on it, and its wedge is the place the article names first. The bars beside each map are the four places outside the United States that fire the neuron most, as a share of Colorado's own level. Select a map to open it.</p>
+    <div class="intro-top">
+      <h1>Colorado Neuron Maps</h1>
+      <button type="button" class="iconbtn theme-btn" aria-label="Switch between light and dark"><svg class="moon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.3 10.2A5.7 5.7 0 0 1 5.8 2.7a5.7 5.7 0 1 0 7.5 7.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><svg class="sun" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.2v1.6M8 13.2v1.6M1.2 8h1.6M13.2 8h1.6M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+    <p class="lede">Goodfire's essay <a href="https://already-clean.goodfire.com/">Neural Networks Are Already Clean</a> maps a neuron in Qwen3-32B that fires on Colorado, and one branch of that map is “Bolivia and the Andes”. This page draws the same kind of map for the four strongest Colorado neurons in each of six models, from 7,239 randomly drawn Wikipedia articles. A dot is one article: the nearer the centre, the harder the neuron fires on it, and its wedge is the place the article names first. The bars beside each map are the four places outside the United States that fire the neuron most, as a share of Colorado's own level. Select a map to open it.</p>
     <ul class="key" aria-label="Wedge colours">
       <li><span class="dot" style="background: var(--c0)"></span>Colorado</li>
       <li><span class="dot" style="background: var(--c1)"></span>Colorado or Denver mentioned</li>
@@ -194,7 +224,7 @@ td.zero { color: var(--ink-3); }
     <div><h3>A dot</h3><p>A neuron is one hidden unit of an MLP block. Its activation is the gated product that feeds the block's output layer, counted only where the gate is open. Positive-pole neurons fire upward; negative-pole neurons fire by going strongly negative. A dot is one article, placed by its strongest token. The centre is the neuron's strongest firing anywhere in the sample and the rings mark half, 20%, 10% and 5% of it. Articles under 3% are counted in the table but not drawn.</p></div>
     <div><h3>The percentages</h3><p>An article's score is the neuron's average over its eight strongest tokens. A place's percentage is the average score of its articles divided by the average score of the Colorado articles, so Colorado is 100%. Articles that mention Colorado or Denver are left out of every other place.</p></div>
     <div><h3>The wedges</h3><p>Set by rule, separately for each neuron. Colorado: articles that name Colorado first. Colorado or Denver mentioned: any other article containing either word. Rest of the United States: another state named first. Then the four places outside the United States with the highest percentage. The essay groups firings by the circuits that feed them; this page groups by place only.</p></div>
-    <div><h3>The neurons</h3><p>Every MLP neuron in each model (1.1 to 2.3 million per model) was scored on a separate, hand-built set of US and general articles, by how well it separates Colorado articles from the rest. Shown are each model's best four that stay quiet on general articles, by the same rule in all six models. Neither foreign articles nor this sample played any part in choosing them.</p></div>
+    <div><h3>The neurons</h3><p>Every MLP neuron in each model (1.1 to 2.3 million per model) was scored on a separate, hand-built set of US and general articles, by how well it separates Colorado articles from the rest. Shown are each model's strongest four that stay quiet on general articles, by the same rule in all six models. Neither foreign articles nor this sample played any part in choosing them.</p></div>
     <div><h3>Code and data</h3><p>The probe, both sets of articles, every model's readings and the scripts that recount these numbers are at <a href="https://github.com/bogatyy/colorado-already-clean">github.com/bogatyy/colorado-already-clean</a>, together with the same measurement on thirteen more models, seven of which have a Colorado neuron.</p></div>
   </section>
 </div>
@@ -205,6 +235,7 @@ td.zero { color: var(--ink-3); }
       <h2 id="st-title"></h2>
       <div class="nav">
         <span class="pos num" id="st-pos"></span>
+        <button type="button" class="iconbtn theme-btn" aria-label="Switch between light and dark"><svg class="moon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.3 10.2A5.7 5.7 0 0 1 5.8 2.7a5.7 5.7 0 1 0 7.5 7.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><svg class="sun" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.2v1.6M8 13.2v1.6M1.2 8h1.6M13.2 8h1.6M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <button type="button" id="prev" aria-label="Previous neuron" title="Previous neuron (left arrow)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button type="button" id="next" aria-label="Next neuron" title="Next neuron (right arrow)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button type="button" id="close" aria-label="Close and return to all maps" title="Close (Esc)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
@@ -441,7 +472,7 @@ td.zero { color: var(--ink-3); }
   function fireCard(host, n, k, ctx) {
     host.replaceChildren();
     host.append(el("div", "strength num", pct(n.f[k] / 10) + " of max"));
-    const c = n.c[k], pl = DPLACE[n.d[k]], where = el("div", "where"), dot = el("span", "dot"); dot.style.background = COL.cats[c];
+    const c = n.c[k], pl = DPLACE[n.d[k]], where = el("div", "where"), dot = el("span", "dot"); dot.style.background = "var(--c" + c + ")";
     where.append(dot, el("span", null, n.names[c]));
     if (pl >= 0 && PLACES[pl] !== n.names[c]) where.append(el("span", null, "· names " + PLACES[pl] + " first"));
     where.append(el("span", null, "· article: " + DOCS[n.d[k]]));
@@ -524,11 +555,11 @@ td.zero { color: var(--ink-3); }
     thead.replaceChildren(hr); tbody.replaceChildren();
     SLOTS.forEach((slot, c) => {
       const N = n.nart[c]; if (!N) return;
-      const tr = el("tr"), th = el("th"); th.scope = "row"; const dot = el("span", "dot"); dot.style.background = COL.cats[c]; th.append(dot, el("span", null, n.names[c])); tr.append(th);
+      const tr = el("tr"), th = el("th"); th.scope = "row"; const dot = el("span", "dot"); dot.style.background = "var(--c" + c + ")"; th.append(dot, el("span", null, n.names[c])); tr.append(th);
       const drawn = n.table[c].reduce((a, b) => a + b, 0);
       n.table[c].concat([N - drawn]).forEach((cnt, b) => {
         const x = (100 * cnt) / N, td = el("td", "num" + (cnt === 0 ? " zero" : ""));
-        if (cnt > 0 && b < BANDS.length) { const bar = el("span", "bar"); bar.style.width = Math.max(2, Math.round(x * 0.5)) + "px"; bar.style.background = COL.cats[c]; td.append(bar); }
+        if (cnt > 0 && b < BANDS.length) { const bar = el("span", "bar"); bar.style.width = Math.max(2, Math.round(x * 0.5)) + "px"; bar.style.background = "var(--c" + c + ")"; td.append(bar); }
         td.append(document.createTextNode(cnt === 0 ? "0" : x < 0.05 ? "<0.1%" : pct(x))); tr.append(td);
       });
       tr.append(el("td", "num", fmt(N)), el("td", "num", shr(n.cshare[c]))); tbody.append(tr);
@@ -576,7 +607,7 @@ td.zero { color: var(--ink-3); }
   const fromHash = () => NEURONS.findIndex((n) => "#" + n.id === location.hash);
   window.addEventListener("hashchange", () => { const k = fromHash(); if (k < 0) closeZoom(false); else if (zoom.hidden || k !== state.i) openZoom(k, false); });
 
-  function redrawAll() { readColors(); drawThumbs(); if (!zoom.hidden) { renderTable(); drawMain(); } }
+  function redrawAll() { readColors(); drawThumbs(); drawMain(); }   // only the canvases hold colours; everything else follows the tokens
   readColors(); buildGrid(); drawThumbs();
   const start = fromHash(); if (start >= 0) openZoom(start, false);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawMain());
