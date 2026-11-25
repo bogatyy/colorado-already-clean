@@ -1,0 +1,21 @@
+179 countries, 264 places, 771 no-place articles, pool 7171, Bolivia articles 24
+
+Qwen3-32B            L55/N11703P     Bolivia  0.72  #1   of 179 countries  #1   of 264 places  #3    of 1,035 topics  top-25 14 top-100 18 | countries: Bolivia 0.72, Kyrgyzstan 0.61, North Macedonia 0.48 | places: Bolivia 0.72, Kyrgyzstan 0.61, North Macedonia 0.48 | corr 0.96, 16 clean
+Llama 3.3 70B        L42/N28598M     Bolivia  0.46  #1   of 179 countries  #1   of 264 places  #3    of 1,035 topics  top-25 12 top-100 17 | countries: Bolivia 0.46, Ecuador 0.14, Benin 0.09 | places: Bolivia 0.46, Wyoming 0.15, Ecuador 0.14 | corr 0.94, 16 clean
+Gemma 3 27B          L35/N1107P      Bolivia  0.69  #1   of 179 countries  #1   of 264 places  #2    of 1,035 topics  top-25 15 top-100 21 | countries: Bolivia 0.69, Peru 0.06, Paraguay 0.06 | places: Bolivia 0.69, Wyoming 0.11, Sichuan 0.10 | corr 0.94, 16 clean
+Gemma 4 31B          L42/N8677M      Bolivia  0.11  #1   of 179 countries  #3   of 264 places  #5    of 1,035 topics  top-25  1 top-100  9 | countries: Bolivia 0.11, Uzbekistan 0.05, Ethiopia 0.04 | places: Sichuan 0.29, Yunnan 0.23, Bolivia 0.11 | corr 0.96, 16 clean
+Mistral Small 3.2    L27/N14184M     Bolivia  0.35  #1   of 179 countries  #1   of 264 places  #3    of 1,035 topics  top-25  9 top-100 18 | countries: Bolivia 0.35, Slovakia 0.13, Andorra 0.11 | places: Bolivia 0.35, Tyrol 0.25, New Mexico 0.25 | corr 0.94, 16 clean
+OLMo-2 13B           L29/N1368P      Bolivia  0.93  #2   of 179 countries  #2   of 264 places  #3    of 1,035 topics  top-25  9 top-100 17 | countries: Nepal 1.16, Bolivia 0.93, Peru 0.19 | places: Nepal 1.16, Bolivia 0.93, Tibet 0.41 | corr 0.92, 16 clean
+OLMo-2 7B            L22/N6538P      Bolivia  0.10  #1   of 179 countries  #4   of 264 places  #12   of 1,035 topics  top-25  3 top-100  7 | countries: Bolivia 0.10, Colombia 0.08, Belgium 0.06 | places: Wyoming 0.22, New Mexico 0.15, Nebraska 0.12 | corr 0.96, 14 clean
+Granite 4.2 30B      L44/N12921P     Bolivia  0.05  #2   of 179 countries  #13  of 264 places  #31   of 1,035 topics  top-25  0 top-100  2 | countries: Colombia 0.08, Bolivia 0.05, Bhutan 0.04 | places: Sichuan 0.27, Tibet 0.16, Queensland 0.11 | corr 0.95, 16 clean
+Phi-4                L26/N17652M     Bolivia  0.23  #7   of 179 countries  #13  of 264 places  #29   of 1,035 topics  top-25  0 top-100  1 | countries: Pakistan 1.73, Kazakhstan 0.45, Kyrgyzstan 0.42 | places: Pakistan 1.73, Xinjiang 0.55, Punjab 0.47 | corr 0.96, 16 clean
+Muse Glimmer 30B     L14/N10142P     Bolivia  0.03  #4   of 179 countries  #17  of 264 places  #84   of 1,035 topics  top-25  0 top-100  0 | countries: Nepal 0.17, Bhutan 0.10, India 0.04 | places: Sichuan 0.83, Tibet 0.44, Yunnan 0.20 | corr 0.96, 16 clean
+Marin 32B            L44/N22385M     Bolivia  0.02  #4   of 179 countries  #16  of 264 places  #50   of 1,035 topics  top-25  0 top-100  1 | countries: Austria 0.10, Andorra 0.05, Colombia 0.04 | places: Alberta 0.41, Tyrol 0.12, Wyoming 0.11 | corr 0.96, 16 clean
+Marin 8B             L24/N10683M     Bolivia  0.00  #51  of 179 countries  #122 of 264 places  #279  of 1,035 topics  top-25  0 top-100  0 | countries: Nepal 0.01, Mongolia 0.01, Czech Republic 0.01 | places: Wyoming 0.27, Nebraska 0.11, South Dakota 0.06 | corr 0.94, 16 clean
+Qwen3.6-27B          L55/N16769M     Bolivia  0.01  #12  of 179 countries  #29  of 264 places  #58   of 1,035 topics  top-25  0 top-100  0 | countries: Ecuador 0.11, Nepal 0.07, South Sudan 0.05 | places: Wyoming 0.14, Ecuador 0.11, Tyrol 0.09 | corr 0.95, 16 clean
+Pythia 12B           no clean Colorado neuron (best raw correlation 0.81; 36 layers x 20480)
+Pythia 6.9B          no clean Colorado neuron (best raw correlation 0.77; 32 layers x 16384)
+Pythia 2.8B          no clean Colorado neuron (best raw correlation 0.79; 32 layers x 10240)
+Pythia 1.4B          no clean Colorado neuron (best raw correlation 0.83; 24 layers x 8192)
+Pythia 410M          no clean Colorado neuron (best raw correlation 0.57; 24 layers x 4096)
+Gensyn open-1b       no clean Colorado neuron (best raw correlation 0.69; 24 layers x 5632)

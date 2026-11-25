@@ -1,0 +1,9 @@
+# Recounting the numbers from the saved readings (analysis/claims.py, summary.py, states.py) needs only numpy.
+numpy
+
+# Rebuilding the page data (analysis/build_page.py) also needs the tokenizers:
+#   transformers>=5.5 sentencepiece protobuf mistral-common
+
+# Measuring a model on a GPU (probe/tiecheck.py). Versions used for the saved results:
+#   torch==2.8.0 (CUDA 12.8)  transformers==5.24.1  tokenizers==0.23.3  accelerate==1.16.0
+#   safetensors sentencepiece protobuf mistral-common==1.13.1 "huggingface_hub[hf_xet]"

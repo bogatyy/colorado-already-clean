@@ -1,0 +1,45 @@
+
+Colorado: 206 neurons in 13 models. Country ranked 1st (share >= 0.1):
+   Bolivia          1st on  40 neurons (11 models)   top 3 on  64 (12 models)
+   Nepal            1st on  17 neurons ( 8 models)   top 3 on  26 ( 9 models)
+   Colombia         1st on  11 neurons ( 7 models)   top 3 on  18 ( 9 models)
+   Austria          1st on   5 neurons ( 4 models)   top 3 on  14 ( 6 models)
+   Andorra          1st on   5 neurons ( 3 models)   top 3 on  10 ( 6 models)
+   Norway           1st on   5 neurons ( 4 models)   top 3 on   6 ( 4 models)
+   top neuron per model: Qwen3-32B Bolivia 0.72; Llama 3.3 70B Bolivia 0.46; Gemma 3 27B Bolivia 0.69; Gemma 4 31B Bolivia 0.11; Mistral Small 3.2 Bolivia 0.35; OLMo-2 13B Nepal 1.16; OLMo-2 7B Bolivia 0.10; Granite 4.2 30B Colombia 0.08; Phi-4 Pakistan 1.73; Muse Glimmer 30B Nepal 0.17; Marin 32B Austria 0.10; Marin 8B Nepal 0.01; Qwen3.6-27B Ecuador 0.11
+
+Utah: 205 neurons in 13 models. Country ranked 1st (share >= 0.1):
+   Tonga            1st on   8 neurons ( 6 models)   top 3 on  17 (10 models)
+   Bolivia          1st on   8 neurons ( 1 models)   top 3 on   9 ( 1 models)
+   Samoa            1st on   7 neurons ( 6 models)   top 3 on  14 ( 9 models)
+   Jordan           1st on   6 neurons ( 5 models)   top 3 on  12 ( 6 models)
+   Nepal            1st on   5 neurons ( 4 models)   top 3 on  13 ( 8 models)
+   Uganda           1st on   5 neurons ( 1 models)   top 3 on   7 ( 1 models)
+   top neuron per model: Qwen3-32B Botswana 0.02; Llama 3.3 70B Samoa 0.02; Gemma 3 27B Uzbekistan 0.24; Gemma 4 31B Tonga 0.01; Mistral Small 3.2 Nepal 0.02; OLMo-2 13B Andorra 0.04; OLMo-2 7B Zimbabwe 0.01; Granite 4.2 30B New Zealand 0.02; Phi-4 Liechtenstein 0.28; Muse Glimmer 30B El Salvador 0.20; Marin 32B Jordan 0.08; Marin 8B El Salvador 0.01; Qwen3.6-27B Bolivia 0.05
+
+New Mexico: 201 neurons in 13 models. Country ranked 1st (share >= 0.1):
+   Venezuela        1st on  13 neurons ( 7 models)   top 3 on  30 (11 models)
+   Uruguay          1st on  11 neurons ( 8 models)   top 3 on  21 (11 models)
+   Bolivia          1st on  10 neurons ( 8 models)   top 3 on  22 (11 models)
+   Chile            1st on  10 neurons ( 7 models)   top 3 on  22 (11 models)
+   Mexico           1st on  10 neurons ( 5 models)   top 3 on  13 ( 6 models)
+   Namibia          1st on   9 neurons ( 7 models)   top 3 on  15 (10 models)
+   top neuron per model: Qwen3-32B Indonesia 0.07; Llama 3.3 70B Mexico 0.08; Gemma 3 27B Azerbaijan 0.15; Gemma 4 31B Uruguay 0.07; Mistral Small 3.2 Dominican Republic 0.04; OLMo-2 13B Chile 0.11; OLMo-2 7B El Salvador 0.32; Granite 4.2 30B Japan 0.20; Phi-4 Mexico 0.26; Muse Glimmer 30B Nicaragua 1.10; Marin 32B Spain 0.11; Marin 8B Belize 0.02; Qwen3.6-27B Dominican Republic 0.07
+
+Wyoming: 185 neurons in 13 models. Country ranked 1st (share >= 0.1):
+   Mongolia         1st on  13 neurons ( 6 models)   top 3 on  19 ( 8 models)
+   Bhutan           1st on   7 neurons ( 4 models)   top 3 on  15 ( 8 models)
+   Kyrgyzstan       1st on   7 neurons ( 4 models)   top 3 on  12 ( 7 models)
+   Tajikistan       1st on   6 neurons ( 5 models)   top 3 on  11 ( 6 models)
+   Turkmenistan     1st on   5 neurons ( 3 models)   top 3 on  12 ( 7 models)
+   Brunei           1st on   4 neurons ( 4 models)   top 3 on  12 ( 6 models)
+   top neuron per model: Qwen3-32B Zambia 0.12; Llama 3.3 70B Uruguay 0.11; Gemma 3 27B Czech Republic 0.28; Gemma 4 31B South Sudan 0.25; Mistral Small 3.2 Namibia 0.22; OLMo-2 13B Paraguay 0.09; OLMo-2 7B Mongolia 0.20; Granite 4.2 30B Equatorial Guinea 0.49; Phi-4 Kuwait 0.34; Muse Glimmer 30B Eswatini 0.13; Marin 32B Kyrgyzstan 0.15; Marin 8B Croatia 0.16; Qwen3.6-27B Samoa 0.17
+
+Montana: 200 neurons in 14 models. Country ranked 1st (share >= 0.1):
+   Montenegro       1st on  32 neurons (13 models)   top 3 on  44 (13 models)
+   Mongolia         1st on  22 neurons (12 models)   top 3 on  47 (13 models)
+   North Macedonia  1st on  10 neurons ( 6 models)   top 3 on  24 ( 9 models)
+   Zambia           1st on  10 neurons ( 7 models)   top 3 on  19 ( 9 models)
+   Burkina Faso     1st on   6 neurons ( 2 models)   top 3 on   9 ( 2 models)
+   Bulgaria         1st on   5 neurons ( 4 models)   top 3 on   9 ( 5 models)
+   top neuron per model: Qwen3-32B Guyana 0.14; Llama 3.3 70B Bulgaria 3.62; Gemma 3 27B Zambia 0.58; Gemma 4 31B North Macedonia 0.14; Mistral Small 3.2 Montenegro 0.91; OLMo-2 13B Mongolia 0.43; OLMo-2 7B Canada 0.55; Granite 4.2 30B Belarus 1.11; Phi-4 Zambia 0.41; Muse Glimmer 30B Montenegro 0.15; Marin 32B New Zealand 0.20; Marin 8B Zambia 1.54; Qwen3.6-27B Burkina Faso 0.60; Pythia 12B Montenegro 0.81

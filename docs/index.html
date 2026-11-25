@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="The Colorado neurons of six language models, drawn one dot per Wikipedia article, with the places abroad that fire them most.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Colorado Neuron Maps">
+<meta property="og:description" content="The Colorado neurons of six language models, drawn one dot per Wikipedia article, with the places abroad that fire them most.">
+<meta property="og:url" content="https://bogatyy.github.io/colorado-already-clean/">
+<meta property="og:image" content="https://bogatyy.github.io/colorado-already-clean/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Colorado Neuron Maps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap">
+<style>
+/* Layout: a grid of 24 cards, six models by four neurons. A card is a small radial map with the four places abroad
+   that fire the neuron most drawn as bars beside it. Selecting a card opens the neuron full-screen: a large map with
+   every wedge labelled, the same bars as a legend, the strongest passages and the numbers as a table. */
+:root {
+  --bg: #fbfbfc; --surface: #ffffff; --ink: #14171c; --ink-2: #474e5c; --ink-3: #767e8d;
+  --line: #e2e5eb; --ring: #cfd4dc; --wash: #f1f3f6; --focus: #1c5cab;
+  /* wedge colours. c0 to c6 name a place and carry a hue; c7 and c8 are the two "everything else" wedges and are greys,
+     so a coloured wedge is always a named place. Checked pair by pair against each other, light and dark. */
+  --c0: #8a4a1c; --c1: #6250d6; --c2: #eb6834; --c3: #1baf7a; --c4: #2a78d6;
+  --c5: #eda100; --c6: #e87ba4; --c7: #6e717b; --c8: #bcc2d2;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1c1f26; --ink: #eef0f4; --ink-2: #b6bcc8; --ink-3: #8a91a0;
+    --line: #2a2e38; --ring: #3a3f4b; --wash: #1f232b; --focus: #86b6ef;
+    --c0: #b5733c; --c1: #9085e9; --c2: #d95926; --c3: #199e70; --c4: #3987e5;
+    --c5: #c98500; --c6: #d55181; --c7: #b6bccc; --c8: #52545c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1c1f26; --ink: #eef0f4; --ink-2: #b6bcc8; --ink-3: #8a91a0;
+  --line: #2a2e38; --ring: #3a3f4b; --wash: #1f232b; --focus: #86b6ef;
+  --c0: #b5733c; --c1: #9085e9; --c2: #d95926; --c3: #199e70; --c4: #3987e5;
+  --c5: #c98500; --c6: #d55181; --c7: #b6bccc; --c8: #52545c;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; }
+html.zoomed { overflow: hidden; }
+.page { max-width: 1280px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 26px; }
+h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.7rem, 3.4vw, 2.3rem); line-height: 1.12; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h2 { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; line-height: 1.2; margin: 0; text-wrap: balance; }
+h3 { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 0; }
+p { margin: 0; }
+a { color: inherit; text-decoration-color: var(--ink-3); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--mono); }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+
+.intro { display: flex; flex-direction: column; gap: 10px; }
+.lede { max-width: 70ch; color: var(--ink-2); font-size: 1.02rem; }
+.key { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 5px 18px; font-size: 0.82rem; color: var(--ink-2); }
+.key li { display: inline-flex; align-items: center; gap: 6px; }
+.key .four { display: inline-flex; gap: 3px; }
+
+/* a bar drawn behind a name and its percentage; the full row width is Colorado's own level */
+.row { position: relative; isolation: isolate; display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 6px; align-items: center;
+  padding: 1px 5px; border-radius: 4px; font-size: 0.78rem; line-height: 1.35; }
+.row::before { content: ""; position: absolute; z-index: -1; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--c); opacity: 0.2; border-radius: 4px; }
+.row .dot { width: 8px; height: 8px; background: var(--c); }
+.row .nm { min-width: 0; overflow-wrap: anywhere; }
+.row .pc { color: var(--ink-2); }
+
+/* the grid of cards */
+.grid { display: flex; flex-direction: column; gap: 22px; }
+.model { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.model-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.model-head h2 { font-family: var(--sans); font-size: 1rem; }
+.model-head span { color: var(--ink-3); font-size: 0.84rem; }
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.card { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px; align-items: center; text-align: left; min-width: 0;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 9px 11px 9px 9px; cursor: pointer; }
+.card:hover { border-color: var(--ink-3); }
+.card canvas { width: 104px; height: 104px; display: block; }
+.cbody { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.chead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-left: 5px; }
+.tid { font-family: var(--mono); font-size: 0.8rem; font-weight: 500; white-space: nowrap; }
+.open { color: var(--ink-3); display: inline-flex; }
+.card:hover .open, .card:focus-visible .open { color: var(--ink); }
+.rows { display: flex; flex-direction: column; gap: 2px; }
+
+/* the opened neuron */
+.zoom { position: fixed; inset: 0; z-index: 50; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; }
+/* the opened view grows slightly into place; the ground is opaque from the first frame, so a stalled animation hides nothing */
+@keyframes zoomin { from { transform: scale(0.97); } to { transform: none; } }
+.zoom-inner { animation: zoomin 0.18s ease-out; transform-origin: 50% 30%; }
+@media (prefers-reduced-motion: reduce) { .zoom-inner { animation: none; } }
+.zoom-inner { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.zoom-bar { position: sticky; top: 0; z-index: 6; background: var(--bg); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px 16px;
+  padding-top: calc(12px + env(safe-area-inset-top, 0px)); padding-bottom: 10px; }
+.zoom-bar h2 { min-width: 0; }
+.nav { display: flex; align-items: center; gap: 6px; flex: none; }
+.nav .pos { color: var(--ink-3); font-size: 0.82rem; margin-right: 4px; white-space: nowrap; }
+.nav button { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; width: 38px; height: 38px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; }
+.nav button:hover { border-color: var(--ink-3); }
+.sub { color: var(--ink-2); font-size: 0.92rem; max-width: 80ch; }
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-areas: "map side" "cap side" "table table"; grid-template-rows: auto 1fr auto; gap: 12px 32px; align-items: start; }
+.mapwrap { grid-area: map; position: relative; min-width: 0; }
+.mapwrap canvas { display: block; width: 100%; touch-action: manipulation; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+.tip { position: absolute; z-index: 5; width: min(320px, calc(100% - 16px)); background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; box-shadow: 0 6px 24px rgb(0 0 0 / 0.14); pointer-events: none; display: flex; flex-direction: column; gap: 5px; font-size: 0.86rem; }
+.caption { grid-area: cap; color: var(--ink-3); font-size: 0.82rem; max-width: 72ch; }
+
+.side { grid-area: side; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.block { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.legend .lhead { font-size: 0.76rem; color: var(--ink-3); padding: 8px 8px 1px; }
+.legend .row { width: 100%; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 8px; padding: 5px 8px; font-size: 0.86rem; }
+.legend .row .dot { width: 10px; height: 10px; }
+.legend button.row { background: none; border: 0; text-align: left; cursor: pointer; }
+.legend button.row:hover { box-shadow: inset 0 0 0 1px var(--ring); }
+.legend button.row[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.legend button.row[disabled] { cursor: default; color: var(--ink-3); box-shadow: none; }
+.legend .row.extra .dot { background: none; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.legend .row.extra { color: var(--ink-2); }
+.hint { color: var(--ink-3); font-size: 0.8rem; }
+
+.fire { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.fire .strength { font-weight: 600; font-size: 0.95rem; }
+.fire .where { display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 0.82rem; flex-wrap: wrap; }
+.passage { font-family: var(--serif); font-size: 0.98rem; line-height: 1.45; overflow-wrap: anywhere; color: var(--ink-2); }
+.passage mark { background: none; color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.picks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.picks button { width: 100%; text-align: left; background: none; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.picks button:hover { border-color: var(--ink-3); }
+.picks button[aria-pressed="true"] { border-color: var(--ink); background: var(--surface); }
+.picks .meta { font-size: 0.78rem; color: var(--ink-3); display: flex; justify-content: space-between; gap: 8px; }
+.picks .meta b { color: var(--ink); font-weight: 600; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; font-size: 0.82rem; align-self: flex-start; }
+
+/* table */
+.tablewrap { grid-area: table; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 0.86rem; }
+caption { text-align: left; color: var(--ink-2); padding-bottom: 8px; max-width: 78ch; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+thead th { font-weight: 500; color: var(--ink-2); vertical-align: bottom; }
+thead th small { display: block; color: var(--ink-3); font-weight: 400; font-size: 0.74rem; }
+th[scope="row"], thead th:first-child { text-align: left; font-weight: 400; }
+th[scope="row"] { display: flex; align-items: center; gap: 8px; border-bottom: 0; }
+tbody tr { border-bottom: 1px solid var(--line); }
+td .bar { display: inline-block; height: 8px; border-radius: 2px; margin-right: 8px; vertical-align: middle; }
+td.zero { color: var(--ink-3); }
+
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px 32px; border-top: 1px solid var(--line); padding-top: 20px; color: var(--ink-2); font-size: 0.88rem; }
+.notes div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.error { padding: 16px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink-2); }
+
+@media (max-width: 1180px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* one column: the map, then the bars that name its wedges, then the fine print */
+@media (max-width: 980px) { .stage { grid-template-columns: minmax(0, 1fr); grid-template-areas: "map" "side" "cap" "table"; grid-template-rows: none; } }
+@media (max-width: 600px) {
+  .cards { grid-template-columns: minmax(0, 1fr); }
+  .nav .pos { display: none; }
+  .zoom-bar h2 { font-size: 1.08rem; }
+}
+</style>
+
+<div class="page" id="page">
+  <header class="intro">
+    <h1>Colorado Neuron Maps</h1>
+    <p class="lede">Goodfire's essay <a href="https://already-clean.goodfire.com/">Neural Networks Are Already Clean</a> maps a neuron in Qwen3-32B that fires on Colorado, and one branch of that map is “Bolivia and the Andes”. This page draws the same kind of map for the four best Colorado neurons in each of six models, from 7,239 randomly drawn Wikipedia articles. A dot is one article: the nearer the centre, the harder the neuron fires on it, and its wedge is the place the article names first. The bars beside each map are the four places outside the United States that fire the neuron most, as a share of Colorado's own level. Select a map to open it.</p>
+    <ul class="key" aria-label="Wedge colours">
+      <li><span class="dot" style="background: var(--c0)"></span>Colorado</li>
+      <li><span class="dot" style="background: var(--c1)"></span>Colorado or Denver mentioned</li>
+      <li><span class="dot" style="background: var(--c2)"></span>Rest of the United States</li>
+      <li><span class="four"><span class="dot" style="background: var(--c3)"></span><span class="dot" style="background: var(--c4)"></span><span class="dot" style="background: var(--c5)"></span><span class="dot" style="background: var(--c6)"></span></span>The four strongest places abroad, named beside each map</li>
+      <li><span class="dot" style="background: var(--c7)"></span>Other places abroad</li>
+      <li><span class="dot" style="background: var(--c8)"></span>No listed place</li>
+    </ul>
+  </header>
+
+  <section class="grid" id="grid" aria-label="The 24 neurons, six models by four neurons"></section>
+
+  <section class="notes" aria-label="How these maps were made">
+    <div><h3>The text</h3><p>Each model read the same 7,239 Wikipedia articles, the first 900 characters of each (about 1.5 million tokens). They were drawn with a fixed random seed from all 6.46 million articles of a 2022 snapshot: 2,000 at random, plus 24 random articles for each of 179 countries, 49 states and 37 regions. An article belongs to the place it names before any other on that list. No article was picked by hand.</p></div>
+    <div><h3>A dot</h3><p>A neuron is one hidden unit of an MLP block. Its activation is the gated product that feeds the block's output layer, counted only where the gate is open. Positive-pole neurons fire upward; negative-pole neurons fire by going strongly negative. A dot is one article, placed by its strongest token. The centre is the neuron's strongest firing anywhere in the sample and the rings mark half, 20%, 10% and 5% of it. Articles under 3% are counted in the table but not drawn.</p></div>
+    <div><h3>The percentages</h3><p>An article's score is the neuron's average over its eight strongest tokens. A place's percentage is the average score of its articles divided by the average score of the Colorado articles, so Colorado is 100%. Articles that mention Colorado or Denver are left out of every other place.</p></div>
+    <div><h3>The wedges</h3><p>Set by rule, separately for each neuron. Colorado: articles that name Colorado first. Colorado or Denver mentioned: any other article containing either word. Rest of the United States: another state named first. Then the four places outside the United States with the highest percentage. The essay groups firings by the circuits that feed them; this page groups by place only.</p></div>
+    <div><h3>The neurons</h3><p>Every MLP neuron in each model (1.1 to 2.3 million per model) was scored on a separate, hand-built set of US and general articles, by how well it separates Colorado articles from the rest. Shown are each model's best four that stay quiet on general articles, by the same rule in all six models. Neither foreign articles nor this sample played any part in choosing them.</p></div>
+    <div><h3>Code and data</h3><p>The probe, both sets of articles, every model's readings and the scripts that recount these numbers are at <a href="https://github.com/bogatyy/colorado-already-clean">github.com/bogatyy/colorado-already-clean</a>, together with the same measurement on thirteen more models, seven of which have a Colorado neuron.</p></div>
+  </section>
+</div>
+
+<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-labelledby="st-title" hidden>
+  <div class="zoom-inner">
+    <div class="zoom-bar">
+      <h2 id="st-title"></h2>
+      <div class="nav">
+        <span class="pos num" id="st-pos"></span>
+        <button type="button" id="prev" aria-label="Previous neuron" title="Previous neuron (left arrow)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" id="next" aria-label="Next neuron" title="Next neuron (right arrow)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" id="close" aria-label="Close and return to all maps" title="Close (Esc)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+    <p class="sub" id="st-sub"></p>
+
+    <div class="stage">
+      <div class="mapwrap" id="mapwrap">
+        <canvas id="map" role="img" aria-label="Radial map of how strongly the selected neuron fires on each sampled article. The same numbers are in the list beside it and the table below."></canvas>
+        <canvas id="overlay" aria-hidden="true"></canvas>
+        <div class="tip" id="tip" hidden></div>
+      </div>
+      <p class="caption" id="st-count"></p>
+
+      <aside class="side">
+        <div class="block">
+          <h3>Average firing, Colorado = 100%</h3>
+          <ul class="legend" id="legend"></ul>
+          <p class="hint" id="standing"></p>
+          <p class="hint">Select a row to isolate its wedge.</p>
+        </div>
+        <div class="block" id="pinblock" hidden>
+          <h3>Selected article</h3>
+          <div class="fire" id="pin"></div>
+          <button type="button" class="linkbtn" id="unpin">Clear selection</button>
+        </div>
+        <div class="block">
+          <h3 id="picks-title">Strongest articles</h3>
+          <ul class="picks" id="picks"></ul>
+        </div>
+      </aside>
+
+      <div class="tablewrap">
+        <table id="bands">
+          <caption id="bands-cap"></caption>
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function () {
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const fmt = (n) => n.toLocaleString("en-US");
+  const pct = (x) => (x >= 9.95 ? Math.round(x) : Math.round(x * 10) / 10) + "%";          // a firing, as a share of the neuron's maximum
+  const shr = (s) => { const v = s * 100; return v > 0 && v < 0.5 ? "<1%" : Math.round(v) + "%"; };   // a place's level, as a share of Colorado's
+  const barW = (s) => Math.max(0, Math.min(100, s * 100)).toFixed(1) + "%";
+  const GROUP_NOTE = { "Qwen3-32B": "the essay's model; its first map is the essay's Colorado neuron" };
+  const millions = (x) => (x / 1e6).toFixed(2) + " million";
+  const THUMB = 104;
+
+  let IDX;
+  try { IDX = await (await fetch("data/index.json")).json(); }
+  catch (e) { $("#grid").replaceWith(el("p", "error", "The map data did not load. Reload the page to try again.")); return; }
+  const SLOTS = IDX[0].slots, BANDS = IDX[0].bands, FLOOR = IDX[0].floor, NDOCS = IDX[0].ndocs, DOCS = IDX[1].titles, DPLACE = IDX[1].place, PLACES = IDX[1].places, NEURONS = IDX.slice(2);
+  const LOGF = Math.log(1 / FLOOR), DEG = Math.PI / 180;
+  const RINGS = [[0.5, "half of max"], [0.2, "20%"], [0.1, "10%"], [0.05, "5%"]];
+  const state = { i: 0, cat: null, pin: null, hover: null };
+  const ctxCache = {};
+  let COL = {};
+
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    const v = (n) => cs.getPropertyValue(n).trim();
+    COL = { bg: v("--bg"), ink: v("--ink"), ink2: v("--ink-2"), ink3: v("--ink-3"), ring: v("--ring"), cats: SLOTS.map((_, i) => v("--c" + i)) };
+  }
+  // ---- geometry: wedges sized by sqrt(articles drawn in the category), one dot per article ----
+  function wedges(n) {
+    const tot = n.table.map((r) => r.reduce((a, b) => a + b, 0));
+    const present = tot.map((t, c) => (t > 0 ? c : -1)).filter((c) => c >= 0);
+    const TOP = 18 * DEG, GAP = 2.4 * DEG, MIN = 13 * DEG;
+    const avail = 2 * Math.PI - TOP - GAP * (present.length - 1) - MIN * present.length;
+    const w = present.map((c) => Math.sqrt(tot[c])), sw = w.reduce((a, b) => a + b, 0);
+    let a = -Math.PI / 2 + TOP / 2; const out = [];
+    present.forEach((c, k) => { const span = MIN + (avail * w[k]) / sw; out.push({ c, a0: a, a1: a + span, total: tot[c] }); a += span + GAP; });
+    return out;
+  }
+  function place(n, ni, ws) {
+    if (n._ang) return n._ang;
+    const ang = new Float32Array(n.f.length), span = {};
+    ws.forEach((wd) => { const pad = (wd.a1 - wd.a0) * 0.06; span[wd.c] = [wd.a0 + pad, wd.a1 - wd.a0 - 2 * pad]; });
+    // a fixed pseudo-random angle per article, so angle is not tied to strength and never changes between visits
+    let a = (1009 * (ni + 1)) >>> 0;
+    const rand = () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    n.c.forEach((c, k) => { const sp = span[c]; ang[k] = sp ? sp[0] + rand() * sp[1] : 0; });
+    n._ang = ang; return ang;
+  }
+  const uOf = (f) => Math.min(1, Math.log(1 / f) / LOGF);
+
+  function draw(canvas, n, ni, opt) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2), W = opt.w, H = opt.h;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    const g = canvas.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const ws = wedges(n), ang = place(n, ni, ws);
+    const cx = W / 2, cy = H / 2 + (opt.labels ? 4 : 0);
+    const R = opt.labels ? Math.min(H / 2 - 30, W / 2 - 176) : Math.min(W, H) / 2 - (opt.thumb ? 4 : 14), r0 = R * 0.045;
+    const rOf = (f) => r0 + (R - r0) * uOf(f);
+    // wedge grounds and outer arcs
+    ws.forEach((wd) => {
+      g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R, wd.a0, wd.a1); g.closePath();
+      g.globalAlpha = state.cat != null && !opt.thumb && state.cat !== wd.c ? 0.03 : 0.075; g.fillStyle = COL.cats[wd.c]; g.fill();
+      g.globalAlpha = state.cat != null && !opt.thumb && state.cat !== wd.c ? 0.25 : 1;
+      g.beginPath(); g.arc(cx, cy, R + (opt.thumb ? 2.5 : 6), wd.a0, wd.a1); g.lineWidth = opt.thumb ? 1.5 : 2; g.strokeStyle = COL.cats[wd.c]; g.stroke();
+    });
+    g.globalAlpha = 1;
+    // rings
+    g.lineWidth = 1; g.strokeStyle = COL.ring;
+    RINGS.forEach(([f]) => { g.globalAlpha = opt.thumb ? 0.5 : 0.8; g.beginPath(); g.arc(cx, cy, rOf(f), 0, 2 * Math.PI); g.stroke(); });
+    g.globalAlpha = 1;
+    // dots, weakest first so strong ones sit on top
+    const k0 = opt.thumb ? 0.5 : Math.max(0.8, Math.min(1.3, R / 250));
+    const xs = new Float32Array(n.f.length), ys = new Float32Array(n.f.length), rs = new Float32Array(n.f.length);
+    const pinDoc = !opt.thumb && state.pin != null ? n.d[state.pin] : null;
+    for (let k = n.f.length - 1; k >= 0; k--) {
+      const f = n.f[k] / 1000, s = 1 - uOf(f), r = rOf(f), c = n.c[k];
+      const x = cx + r * Math.cos(ang[k]), y = cy + r * Math.sin(ang[k]), pr = (0.9 + 2.5 * Math.pow(s, 1.15)) * k0;
+      xs[k] = x; ys[k] = y; rs[k] = pr;
+      let al = (0.5 + 0.45 * s) * (c >= 7 ? 0.6 : 1);   // the two grey wedges sit back
+      if (!opt.thumb) { if (pinDoc != null) al = n.d[k] === pinDoc ? 1 : 0.07; else if (state.cat != null && state.cat !== c) al = 0.07; }
+      g.globalAlpha = al; g.fillStyle = COL.cats[c]; g.beginPath(); g.arc(x, y, pr, 0, 2 * Math.PI); g.fill();
+      if (pinDoc != null && n.d[k] === pinDoc) { g.globalAlpha = 0.9; g.lineWidth = 1; g.strokeStyle = COL.ink; g.stroke(); }
+    }
+    g.globalAlpha = 1;
+    if (opt.thumb) return null;
+    // ring labels in the gap at twelve o'clock
+    g.font = '500 10.5px "IBM Plex Sans", system-ui, sans-serif'; g.textAlign = "center"; g.textBaseline = "middle";
+    [[1, "max"]].concat(RINGS).forEach(([f, label]) => {
+      const y = cy - rOf(f) - (f === 1 ? 9 : 0), tw = g.measureText(label).width + 8;
+      g.fillStyle = COL.bg; g.fillRect(cx - tw / 2, y - 7, tw, 14); g.fillStyle = COL.ink3; g.fillText(label, cx, y);
+    });
+    // wedge labels outside the arc: the place, then its level as a share of Colorado's
+    if (opt.labels) {
+      const NAME = '500 12.5px "IBM Plex Sans", system-ui, sans-serif', FIG = '400 12px "IBM Plex Sans", system-ui, sans-serif', LH = 15;
+      g.textBaseline = "middle";
+      const labs = ws.map((wd) => { const m = (wd.a0 + wd.a1) / 2, right = Math.cos(m) >= 0, lines = wrap(n.names[wd.c], 19); return { wd, m, right, y: cy + (R + 20) * Math.sin(m), lines, half: ((lines.length + 1) * LH) / 2 }; });
+      [true, false].forEach((side) => {
+        const col = labs.filter((l) => l.right === side).sort((a, b) => a.y - b.y);
+        for (let k = 1; k < col.length; k++) { const need = col[k - 1].y + col[k - 1].half + col[k].half + 5; if (col[k].y < need) col[k].y = need; }
+        for (let k = col.length - 1; k >= 0; k--) { const maxY = (k === col.length - 1 ? H - 4 : col[k + 1].y - col[k + 1].half - 5) - col[k].half; if (col[k].y > maxY) col[k].y = maxY; }
+      });
+      labs.forEach((l) => {
+        const ax = cx + (R + 9) * Math.cos(l.m), ay = cy + (R + 9) * Math.sin(l.m), tx = cx + (l.right ? 1 : -1) * (Math.abs((R + 20) * Math.cos(l.m)) + 6);
+        const dim = state.cat != null && state.cat !== l.wd.c, y0 = l.y - l.half + LH / 2;
+        g.globalAlpha = dim ? 0.35 : 1; g.strokeStyle = COL.ring; g.lineWidth = 1; g.beginPath(); g.moveTo(ax, ay); g.lineTo(tx - (l.right ? 4 : -4), y0); g.stroke();
+        g.textAlign = l.right ? "left" : "right";
+        g.font = NAME; g.fillStyle = COL.ink; l.lines.forEach((t, k) => g.fillText(t, tx, y0 + k * LH));
+        g.font = FIG; g.fillStyle = COL.ink2; g.fillText(shr(n.cshare[l.wd.c]), tx, y0 + l.lines.length * LH);
+      });
+      g.globalAlpha = 1;
+    }
+    return { xs, ys, rs, cx, cy, R };
+  }
+  function wrap(text, max) { const out = []; let cur = ""; text.split(" ").forEach((w) => { if ((cur + " " + w).trim().length > max && cur) { out.push(cur); cur = w; } else cur = (cur + " " + w).trim(); }); if (cur) out.push(cur); return out; }
+
+  // ---- shared pieces ----
+  const ord = (k) => { const sfx = ["th", "st", "nd", "rd"], v = k % 100; return k + (sfx[(v - 20) % 10] || sfx[v] || sfx[0]); };
+  const idLabel = (n) => "L" + n.layer + " · N" + n.neuron;
+  // a name and its percentage with a bar behind them; the full width is Colorado's level
+  function barRow(tag, c, name, share) {
+    const r = el(tag, "row"); r.style.setProperty("--w", barW(share)); r.style.setProperty("--c", "var(--c" + c + ")");
+    r.append(el("i", "dot"), el("span", "nm", name), el("span", "pc num", shr(share))); return r;
+  }
+
+  // ---- the grid of cards ----
+  const cards = [];
+  function buildGrid() {
+    const host = $("#grid"), groups = {};
+    NEURONS.forEach((n, i) => { (groups[n.model] = groups[n.model] || []).push(i); });
+    Object.keys(groups).forEach((m) => {
+      const sec = el("div", "model"), head = el("div", "model-head");
+      head.append(el("h2", null, m)); if (GROUP_NOTE[m]) head.append(el("span", null, GROUP_NOTE[m]));
+      const row = el("div", "cards");
+      groups[m].forEach((i) => {
+        const n = NEURONS[i], b = el("button", "card"); b.type = "button";
+        const cv = document.createElement("canvas"); cv.setAttribute("aria-hidden", "true");
+        const body = el("span", "cbody"), ch = el("span", "chead"), open = el("span", "open"), rows = el("span", "rows");
+        open.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M7.2 1H11v3.8M11 1L6.8 5.2M4.8 11H1V7.2M1 11l4.2-4.2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        ch.append(el("span", "tid", idLabel(n)), open);
+        const tops = n.tops.slice(0, 4);
+        tops.forEach((t, j) => rows.append(barRow("span", 3 + j, t[0], t[1])));
+        body.append(ch, rows); b.append(cv, body);
+        b.setAttribute("aria-label", "Open the map of " + n.model + " layer " + n.layer + " neuron " + n.neuron + ". Strongest places outside the United States, as a share of Colorado's level: " + tops.map((t) => t[0] + " " + shr(t[1])).join(", ") + ".");
+        b.addEventListener("click", () => openZoom(i, true));
+        row.append(b); cards[i] = { b, cv };
+      });
+      sec.append(head, row); host.append(sec);
+    });
+  }
+  function drawThumbs() { cards.forEach((t, i) => draw(t.cv, NEURONS[i], i, { w: THUMB, h: THUMB, thumb: true })); }
+
+  // ---- the opened neuron ----
+  let geo = null;
+  const zoom = $("#zoom"), page = $("#page"), map = $("#map"), overlay = $("#overlay"), wrapEl = $("#mapwrap"), tip = $("#tip");
+  function drawMain() {
+    if (zoom.hidden) return;
+    const n = NEURONS[state.i], W = wrapEl.clientWidth, labels = W >= 640;
+    if (W < 80) return;   // not laid out yet (hidden pane); the resize observer draws once there is room
+    const room = Math.max(400, window.innerHeight - $(".zoom-bar").offsetHeight - $("#st-sub").offsetHeight - 110);
+    const H = labels ? Math.round(Math.min(W * 0.78, 660, room)) : W;
+    map.style.height = H + "px"; overlay.style.height = H + "px";
+    geo = draw(map, n, state.i, { w: W, h: H, labels }); geo.W = W; geo.H = H;
+    drawOverlay();
+  }
+  function drawOverlay() {
+    if (!geo) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2); overlay.width = Math.round(geo.W * dpr); overlay.height = Math.round(geo.H * dpr);
+    const g = overlay.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, geo.W, geo.H);
+    [[state.pin, 2.2], [state.hover, 1.4]].forEach(([k, lw]) => {
+      if (k == null) return; g.beginPath(); g.arc(geo.xs[k], geo.ys[k], geo.rs[k] + 4, 0, 2 * Math.PI); g.lineWidth = lw; g.strokeStyle = COL.ink; g.stroke();
+    });
+  }
+  function nearest(px, py) {
+    if (!geo) return null;
+    const n = NEURONS[state.i]; let best = null, bd = 16 * 16;
+    const pinDoc = state.pin != null ? n.d[state.pin] : null;
+    for (let k = 0; k < n.f.length; k++) {
+      if (pinDoc == null && state.cat != null && n.c[k] !== state.cat) continue;
+      const dx = geo.xs[k] - px, dy = geo.ys[k] - py, d = dx * dx + dy * dy; if (d < bd) { bd = d; best = k; }
+    }
+    return best;
+  }
+  function loadCtx(n) { if (!ctxCache[n.id]) ctxCache[n.id] = fetch("data/ctx-" + n.id + ".json").then((r) => r.json()).catch(() => null); return ctxCache[n.id]; }
+  function passageNode(c) {
+    const p = el("p", "passage");
+    if (!c) { p.textContent = "The passage did not load."; return p; }
+    const m = document.createElement("mark"); m.textContent = c[1];
+    p.append(document.createTextNode("…" + c[0]), m, document.createTextNode(c[2] + "…")); return p;
+  }
+  function fireCard(host, n, k, ctx) {
+    host.replaceChildren();
+    host.append(el("div", "strength num", pct(n.f[k] / 10) + " of max"));
+    const c = n.c[k], pl = DPLACE[n.d[k]], where = el("div", "where"), dot = el("span", "dot"); dot.style.background = COL.cats[c];
+    where.append(dot, el("span", null, n.names[c]));
+    if (pl >= 0 && PLACES[pl] !== n.names[c]) where.append(el("span", null, "· names " + PLACES[pl] + " first"));
+    where.append(el("span", null, "· article: " + DOCS[n.d[k]]));
+    host.append(where, passageNode(ctx ? ctx[k] : null));
+  }
+  async function showTip(k, px, py) {
+    const n = NEURONS[state.i]; const ctx = await loadCtx(n); if (state.hover !== k) return;
+    fireCard(tip, n, k, ctx); tip.hidden = false;
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    tip.style.left = Math.max(8, Math.min(geo.W - tw - 8, px + 16)) + "px";
+    tip.style.top = (py + th + 24 > geo.H ? Math.max(8, py - th - 14) : py + 16) + "px";
+  }
+  map.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "touch") return;
+    const r = map.getBoundingClientRect(), k = nearest(e.clientX - r.left, e.clientY - r.top);
+    if (k === state.hover) return; state.hover = k; drawOverlay();
+    if (k == null) { tip.hidden = true; map.style.cursor = "default"; } else { map.style.cursor = "pointer"; showTip(k, geo.xs[k], geo.ys[k]); }
+  });
+  map.addEventListener("pointerleave", () => { state.hover = null; tip.hidden = true; drawOverlay(); });
+  map.addEventListener("click", async (e) => {
+    const r = map.getBoundingClientRect(), k = nearest(e.clientX - r.left, e.clientY - r.top);
+    await setPin(k);
+    if (k != null && window.matchMedia("(max-width: 980px)").matches) { state.hover = k; showTip(k, geo.xs[k], geo.ys[k]); }
+  });
+  $("#unpin").addEventListener("click", () => setPin(null));
+
+  async function setPin(k) {
+    state.pin = k; state.hover = null; tip.hidden = true; drawMain(); renderPicks();
+    const blk = $("#pinblock"); if (k == null) { blk.hidden = true; return; }
+    const n = NEURONS[state.i], ctx = await loadCtx(n); if (state.pin !== k) return;
+    fireCard($("#pin"), n, k, ctx);
+    blk.hidden = false;
+  }
+  function setCat(c) { state.cat = state.cat === c ? null : c; state.pin = null; $("#pinblock").hidden = true; drawMain(); renderLegend(); renderPicks(); }
+
+  // the legend is the chart of the sentence "outside the United States it fires most on ...": one bar per wedge
+  function renderLegend() {
+    const n = NEURONS[state.i], host = $("#legend"); host.replaceChildren();
+    SLOTS.forEach((slot, c) => {
+      if (!n.nart[c]) return;
+      if (c === 3) host.append(el("li", "lhead", "Outside the United States, strongest first"));
+      const tot = n.table[c].reduce((a, b) => a + b, 0), li = el("li"), b = barRow("button", c, n.names[c], n.cshare[c]); b.type = "button";
+      b.title = slot.desc + ". " + fmt(n.nart[c]) + " articles."; b.setAttribute("aria-pressed", String(state.cat === c));
+      if (!tot) b.disabled = true; else b.addEventListener("click", () => setCat(c));
+      li.append(b); host.append(li);
+      if (c === 6 && n.bolivia && n.brank > 4) {   // Bolivia is not one of the four wedges: show where it stands anyway
+        const x = el("li"), r = barRow("div", 7, "Bolivia, " + ord(n.brank) + " of " + n.nplaces, n.bolivia[0]); r.classList.add("extra"); x.append(r); host.append(x);
+      }
+    });
+    const st = $("#standing");
+    if (!n.bolivia) { st.textContent = ""; return; }
+    st.textContent = "Bolivia is " + ord(n.bcrank) + " of " + n.ncountries + " countries"
+      + (n.brank === n.bcrank ? " and of all " + n.nplaces + " places abroad" : ", and " + ord(n.brank) + " of " + n.nplaces + " places abroad once regions such as Sichuan or Tyrol are counted")
+      + ", at " + shr(n.bolivia[0]) + " of Colorado's level.";
+  }
+  async function renderPicks() {
+    const n = NEURONS[state.i], c = state.cat != null ? state.cat : 3, host = $("#picks");
+    $("#picks-title").textContent = "Strongest articles: " + n.names[c];
+    const ks = [];
+    for (let k = 0; k < n.f.length && ks.length < 5; k++) { if (n.c[k] === c) ks.push(k); }
+    const ctx = await loadCtx(n); if (NEURONS[state.i] !== n) return;
+    host.replaceChildren();
+    if (!ks.length) { host.append(el("li", "hint", "No article in this wedge reaches the floor.")); return; }
+    ks.forEach((k) => {
+      const li = el("li"), b = el("button"); b.type = "button"; b.setAttribute("aria-pressed", String(state.pin === k));
+      const meta = el("span", "meta"), sv = el("b", "num", pct(n.f[k] / 10)); meta.append(el("span", null, DOCS[n.d[k]]), sv);
+      b.append(meta, passageNode(ctx ? ctx[k] : null)); b.addEventListener("click", () => setPin(state.pin === k ? null : k));
+      li.append(b); host.append(li);
+    });
+  }
+  function renderTable() {
+    const n = NEURONS[state.i], thead = $("#bands thead"), tbody = $("#bands tbody");
+    $("#bands-cap").textContent = "How strongly each wedge's articles fire the neuron. A cell is the share of that wedge's articles whose strongest firing falls in the band; bands are shares of the neuron's maximum. Each row adds up to 100%.";
+    const hr = el("tr"); hr.append(el("th", null, "What the article names first"));
+    BANDS.forEach(([lo, hi]) => { const th = el("th", "num", Math.round(lo * 100) + "–" + Math.round(hi * 100) + "%"); th.scope = "col"; hr.append(th); });
+    const thU = el("th", "num", "under " + Math.round(FLOOR * 100) + "%"); thU.scope = "col"; thU.append(el("small", null, "not drawn"));
+    const thN = el("th", "num", "Articles"); thN.scope = "col";
+    const thS = el("th", "num", "Average"); thS.scope = "col"; thS.append(el("small", null, "Colorado = 100%"));
+    hr.append(thU, thN, thS);
+    thead.replaceChildren(hr); tbody.replaceChildren();
+    SLOTS.forEach((slot, c) => {
+      const N = n.nart[c]; if (!N) return;
+      const tr = el("tr"), th = el("th"); th.scope = "row"; const dot = el("span", "dot"); dot.style.background = COL.cats[c]; th.append(dot, el("span", null, n.names[c])); tr.append(th);
+      const drawn = n.table[c].reduce((a, b) => a + b, 0);
+      n.table[c].concat([N - drawn]).forEach((cnt, b) => {
+        const x = (100 * cnt) / N, td = el("td", "num" + (cnt === 0 ? " zero" : ""));
+        if (cnt > 0 && b < BANDS.length) { const bar = el("span", "bar"); bar.style.width = Math.max(2, Math.round(x * 0.5)) + "px"; bar.style.background = COL.cats[c]; td.append(bar); }
+        td.append(document.createTextNode(cnt === 0 ? "0" : x < 0.05 ? "<0.1%" : pct(x))); tr.append(td);
+      });
+      tr.append(el("td", "num", fmt(N)), el("td", "num", shr(n.cshare[c]))); tbody.append(tr);
+    });
+  }
+  function renderHead() {
+    const n = NEURONS[state.i];
+    $("#st-title").textContent = n.model + ", layer " + n.layer + ", neuron " + n.neuron;
+    $("#st-pos").textContent = (state.i + 1) + " of " + NEURONS.length;
+    const pole = n.pole === "P" ? "Positive pole" : "Negative pole";
+    const essay = n.id === "qwen-l55-n11703" ? " This is the Colorado neuron from the essay." : "";
+    const ranked = n.rank ? ". Ranked " + ord(n.rank) + " of " + millions(n.nneurons) + " neurons for separating Colorado articles from other US and general ones." : ". One of the best of " + millions(n.nneurons) + " neurons at separating Colorado articles from other US and general ones.";
+    $("#st-sub").textContent = pole + ranked + essay;
+    $("#st-count").textContent = fmt(n.shown) + " of the " + fmt(NDOCS) + " sampled articles reach " + Math.round(FLOOR * 100) + "% of the neuron's maximum and are drawn" + (n.shown < n.total ? ", an even sample of the " + fmt(n.total) + " that do" : "")
+      + ". The percentage on each wedge is the average firing of its articles, with Colorado's own articles as 100%. Wedge width follows the square root of the number of articles drawn, so small wedges stay readable. A dot's angle inside its wedge carries no meaning.";
+  }
+  function select(i) {
+    state.i = (i + NEURONS.length) % NEURONS.length; state.cat = null; state.pin = null; state.hover = null; tip.hidden = true; $("#pinblock").hidden = true;
+    renderHead(); renderLegend(); renderTable(); drawMain(); renderPicks(); loadCtx(NEURONS[state.i]);
+  }
+  const setHash = (h) => { try { if (location.hash.replace("#", "") !== h) location.hash = h; } catch (e) {} };
+  function openZoom(i, hash) {
+    const fresh = zoom.hidden;
+    if (fresh) { zoom.hidden = false; page.inert = true; document.documentElement.classList.add("zoomed"); }
+    select(i);
+    if (fresh) { zoom.scrollTop = 0; $("#close").focus({ preventScroll: true }); }
+    if (hash) setHash(NEURONS[state.i].id);
+  }
+  function closeZoom(hash) {
+    if (zoom.hidden) return;
+    zoom.hidden = true; page.inert = false; document.documentElement.classList.remove("zoomed"); tip.hidden = true; geo = null;
+    const back = cards[state.i] && cards[state.i].b;
+    if (back) { back.focus({ preventScroll: true }); back.scrollIntoView({ block: "nearest" }); }
+    if (hash) setHash("");
+  }
+  $("#prev").addEventListener("click", () => openZoom(state.i - 1, true));
+  $("#next").addEventListener("click", () => openZoom(state.i + 1, true));
+  $("#close").addEventListener("click", () => closeZoom(true));
+  document.addEventListener("keydown", (e) => {
+    if (zoom.hidden || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === "Escape") { e.preventDefault(); if (state.pin != null) setPin(null); else closeZoom(true); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); openZoom(state.i - 1, true); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); openZoom(state.i + 1, true); }
+  });
+  const fromHash = () => NEURONS.findIndex((n) => "#" + n.id === location.hash);
+  window.addEventListener("hashchange", () => { const k = fromHash(); if (k < 0) closeZoom(false); else if (zoom.hidden || k !== state.i) openZoom(k, false); });
+
+  function redrawAll() { readColors(); drawThumbs(); if (!zoom.hidden) { renderTable(); drawMain(); } }
+  readColors(); buildGrid(); drawThumbs();
+  const start = fromHash(); if (start >= 0) openZoom(start, false);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawMain());
+  let rt = null; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(drawMain, 60); }).observe(wrapEl);
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawMain, 60); });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
+  new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>

@@ -1,0 +1,88 @@
+{
+ "note": "Hugging Face repositories and commit ids of the weights each result was measured on (runs of 2026-11-23 to 2026-11-25). For the six models re-run on 2026-11-25 (qwen3, llama33_70b, gemma3_27b, gemma4, mistral32, qwen36) the id was read from the download on the GPU machine. For the others it is the repository's head on 2026-11-25; each of those repositories was last changed before the run. llama33_70b and gemma3_27b are ungated mirrors of gated repositories (meta-llama/Llama-3.3-70B-Instruct, google/gemma-3-27b-it); that the mirrors are byte-identical to the originals was not verified.",
+ "software": {
+  "torch": "2.8.0+cu128",
+  "transformers": "5.24.1",
+  "tokenizers": "0.23.3",
+  "mistral_common": "1.13.1",
+  "accelerate": "1.16.0"
+ },
+ "models": {
+  "qwen3": {
+   "repo": "Qwen/Qwen3-32B",
+   "commit": "9216db5781bf21249d130ec9da846c4624c16137"
+  },
+  "llama33_70b": {
+   "repo": "unsloth/Llama-3.3-70B-Instruct",
+   "commit": "99cd0d2c829e92a67c844f9144c2509632e5c87f"
+  },
+  "gemma3_27b": {
+   "repo": "unsloth/gemma-3-27b-it",
+   "commit": "7a5a3053dbd5d1d58e48159e87b9df2fc545a49a"
+  },
+  "gemma4": {
+   "repo": "google/gemma-4-31B-it",
+   "commit": "842da3794eaa0b77d5f08bae87a17459d91ff475"
+  },
+  "mistral32": {
+   "repo": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+   "commit": "95a6d26c4bfb886c58daf9d3f7332c857cb27b43"
+  },
+  "olmo13b": {
+   "repo": "allenai/OLMo-2-1124-13B",
+   "commit": "3fefddc1bf18a30e1d9b91000271630718f2aa8b"
+  },
+  "olmo7b": {
+   "repo": "allenai/OLMo-2-1124-7B",
+   "commit": "7df9a82518afdecae4e8c026b27adccc8c1f0032"
+  },
+  "granite42_30b": {
+   "repo": "ibm-granite/granite-4.2-30b",
+   "commit": "9e668ce1c538387ef24d3644e9b0606647762636"
+  },
+  "phi4": {
+   "repo": "microsoft/phi-4",
+   "commit": "2db69c1c3e91a05d2c64a3185acfbaf36f744e25"
+  },
+  "muse30b": {
+   "repo": "meta-models/Muse-Glimmer-30B",
+   "commit": "1297fd7dfeac4598948a5d15886968435c81c2b7"
+  },
+  "marin32b": {
+   "repo": "marin-community/marin-32b-base",
+   "commit": "f19b346615212ff9a6d92c10861a9cdb100cbf97"
+  },
+  "marin8b": {
+   "repo": "marin-community/marin-8b-base",
+   "commit": "e1a2021fd607dfba5086e2cbe916c160d03870f1"
+  },
+  "qwen36": {
+   "repo": "Qwen/Qwen3.6-27B",
+   "commit": "1cda14dd71a3f47115850eb790f416f165da1cb5"
+  },
+  "pythia12b": {
+   "repo": "EleutherAI/pythia-12b",
+   "commit": "bb1e3e710cdf6b524461d543cfb5ba773f0a81b6"
+  },
+  "pythia6_9b": {
+   "repo": "EleutherAI/pythia-6.9b",
+   "commit": "c0e3eee36dc47af0c49f361c74cfe459c09f7f23"
+  },
+  "pythia2_8b": {
+   "repo": "EleutherAI/pythia-2.8b",
+   "commit": "2a259cdd96a4beb1cdf467512e3904197345f6a9"
+  },
+  "pythia1_4b": {
+   "repo": "EleutherAI/pythia-1.4b",
+   "commit": "fedc38a16eea3bd36a96b906d78d11d2ce18ed79"
+  },
+  "pythia410m": {
+   "repo": "EleutherAI/pythia-410m",
+   "commit": "9879c9b5f8bea9051dcb0e68dff21493d67e9d4f"
+  },
+  "gensyn": {
+   "repo": "Gensyn/open-1b-base",
+   "commit": "e3ac5f426e95c1ef25e566c158d67872d0ae7e41"
+  }
+ }
+}
