@@ -1,6 +1,6 @@
 """Build the data behind the circle-map page (artifact/colorado-maps.html) from the probe's result files.
 
-Nothing here is chosen by hand. For each of six models the four best Colorado neurons are taken (the first four of
+Nothing here is chosen by hand. For each of six models the four strongest Colorado neurons are taken (the first four of
 the probe's "clean" list: highest correlation with "this article is about Colorado" on US and general articles, quiet
 on general articles). For each neuron:
   - a dot is one of the 7,239 sampled articles, placed by its strongest token (share of the neuron's maximum over
